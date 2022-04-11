@@ -10,6 +10,6 @@ conda activate dapc
 
 ### Train/Evaluate/Predict
 
-Check the respective notebooks of how to use the module for training, evaluation and prediction.
+Check the respective [notebooks](./notebooks) of how to use the module for training, evaluation and prediction.
 
 
