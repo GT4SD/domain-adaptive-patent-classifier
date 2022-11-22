@@ -1,6 +1,7 @@
 import pickle
 
 import click
+import pandas as pd
 
 from dapc.classifier_multilingual import ClassifierMultilingual
 from dapc.labels_converter import LabelsConverter
@@ -31,13 +32,22 @@ from dapc.languages_detector import LanguagesDetector
     default=10,
     help="Enter the number of k folds for cross validation.",
 )
-def main(datapath, model_type, model_name, epochs):
+def main(datapath, model_type, model_name, epochs, k):
+    if datapath.endswith(".pl"):
+        with open(datapath, "rb") as f:
+            data = pickle.load(f)
 
-    with open(datapath, "rb") as f:
-        data = pickle.load(f)
+        texts = data["texts"]
+        labels = data["labels"]
 
-    texts = data["texts"]
-    labels = data["labels"]
+    elif datapath.endswith(".xlsx"):
+        data = pd.read_excel(datapath)
+
+        texts = data["texts"].to_list()
+        labels = data["labels"].to_list()
+
+    else:
+        raise ValueError("Datapath should be a pickle or excel file.")
 
     lb = LabelsConverter(labels)
 
@@ -51,7 +61,7 @@ def main(datapath, model_type, model_name, epochs):
     langs = lan_detector.infer_languages(texts)
 
     transformer_classifier_multi.cross_validation_multilingual(
-        texts, labels_int, langs, k=6, epochs=epochs
+        texts, labels_int, langs, k=k, epochs=epochs
     )
 
 
